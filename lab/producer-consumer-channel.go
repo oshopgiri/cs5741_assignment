@@ -7,11 +7,7 @@ import (
 	"time"
 )
 
-const (
-	Alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-)
-
-func producer(bowl chan string, waitGroup *sync.WaitGroup) {
+func producerChannel(bowl chan string, waitGroup *sync.WaitGroup) {
 	rand.Seed(time.Now().UnixNano())
 
 	for i := 1; i <= 100; i++ {
@@ -23,7 +19,7 @@ func producer(bowl chan string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func consumer(bowl chan string, waitGroup *sync.WaitGroup) {
+func consumerChannel(bowl chan string, waitGroup *sync.WaitGroup) {
 	for i := 1; i <= 100; i++ {
 		consume := <-bowl
 		fmt.Printf("Consumed letter number %v: '%v'\n", i, consume)
@@ -32,17 +28,17 @@ func consumer(bowl chan string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func main() {
+func producerConsumerChannel() {
 	bowl := make(chan string)
 	waitGroup := new(sync.WaitGroup)
 
 	waitGroup.Add(1)
-	go producer(bowl, waitGroup)
+	go producerChannel(bowl, waitGroup)
 
 	time.Sleep(5)
 
 	waitGroup.Add(1)
-	go consumer(bowl, waitGroup)
+	go consumerChannel(bowl, waitGroup)
 
 	waitGroup.Wait()
 }

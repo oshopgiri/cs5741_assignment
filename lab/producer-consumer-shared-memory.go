@@ -7,11 +7,7 @@ import (
 	"time"
 )
 
-const (
-	Alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-)
-
-func producer(bowl []string, waitGroup *sync.WaitGroup) {
+func producerSharedMemory(bowl []string, waitGroup *sync.WaitGroup) {
 	rand.Seed(time.Now().UnixNano())
 
 	for i := 0; i < 100; i++ {
@@ -23,7 +19,7 @@ func producer(bowl []string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func consumer(bowl []string, waitGroup *sync.WaitGroup) {
+func consumerSharedMemory(bowl []string, waitGroup *sync.WaitGroup) {
 	for i := 0; i < 100; i++ {
 		consume := bowl[i]
 		if consume == "" {
@@ -37,17 +33,17 @@ func consumer(bowl []string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func main() {
+func producerConsumerSharedMemory() {
 	bowl := make([]string, 100)
 	waitGroup := new(sync.WaitGroup)
 
 	waitGroup.Add(1)
-	go producer(bowl, waitGroup)
+	go producerSharedMemory(bowl, waitGroup)
 
 	time.Sleep(5)
 
 	waitGroup.Add(1)
-	go consumer(bowl, waitGroup)
+	go consumerSharedMemory(bowl, waitGroup)
 
 	waitGroup.Wait()
 }
