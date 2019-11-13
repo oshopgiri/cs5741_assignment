@@ -1,39 +1,47 @@
 package main
 
-import "testing"
+import (
+	"io/ioutil"
+	"log"
+	"testing"
+)
+
+func BenchmarkMain(b *testing.B) {
+	log.SetOutput(ioutil.Discard)
+}
 
 func BenchmarkAsynchronousStackArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		asynchronousStackArray()
+		AsynchronousStackArray()
 	}
 }
 
 func BenchmarkSynchronousStackArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		synchronousStackArray()
+		SynchronousStackArray()
 	}
 }
 
 func BenchmarkAsynchronousStackLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		asynchronousStackLinkedList()
+		AsynchronousStackLinkedList()
 	}
 }
 
 func BenchmarkSynchronousStackLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		synchronousStackLinkedList()
+		SynchronousStackLinkedList()
 	}
 }
 
 func BenchmarkAsynchronousStackBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		asynchronousStackBinaryTree()
+		AsynchronousStackBinaryTree()
 	}
 }
 
 func BenchmarkSynchronousStackBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		synchronousStackBinaryTree()
+		SynchronousStackBinaryTree()
 	}
 }

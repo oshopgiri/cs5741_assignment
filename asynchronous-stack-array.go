@@ -26,7 +26,7 @@ func consumeStackArrayAsync(myStack *stack.Array, n int, waitGroup *sync.WaitGro
 	waitGroup.Done()
 }
 
-func asynchronousStackArray() {
+func AsynchronousStackArray() {
 	waitGroup := new(sync.WaitGroup)
 	myStack := &stack.Array{}
 	myStack.InitArray()
@@ -40,7 +40,3 @@ func asynchronousStackArray() {
 
 	waitGroup.Wait()
 }
-
-//func main() {
-//	asynchronousStackArray()
-//}

@@ -26,7 +26,7 @@ func consumeStackBinaryTreeAsync(myStack *stack.BinaryTree, n int, waitGroup *sy
 	waitGroup.Done()
 }
 
-func asynchronousStackBinaryTree() {
+func AsynchronousStackBinaryTree() {
 	waitGroup := new(sync.WaitGroup)
 	myStack := &stack.BinaryTree{}
 	n := 20
@@ -39,7 +39,3 @@ func asynchronousStackBinaryTree() {
 
 	waitGroup.Wait()
 }
-
-//func main() {
-//	asynchronousStackBinaryTree()
-//}

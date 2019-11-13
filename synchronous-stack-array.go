@@ -16,7 +16,7 @@ func consumeStackArray(myStack *stack.Array, n int) {
 	}
 }
 
-func synchronousStackArray() {
+func SynchronousStackArray() {
 	myStack := &stack.Array{}
 	myStack.InitArray()
 	n := 20
@@ -24,7 +24,3 @@ func synchronousStackArray() {
 	produceStackArray(myStack, n)
 	consumeStackArray(myStack, n)
 }
-
-//func main() {
-//	synchronousStackArray()
-//}

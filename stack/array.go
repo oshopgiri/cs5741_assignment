@@ -1,13 +1,13 @@
 package stack
 
 import (
-	"fmt"
+	"log"
 	"sync"
 )
 
 type Array struct {
+	sync.RWMutex
 	elements []int
-	mutex    sync.RWMutex
 }
 
 func (array *Array) InitArray() {
@@ -15,22 +15,25 @@ func (array *Array) InitArray() {
 }
 
 func (array *Array) Push(element int) {
-	array.mutex.Lock()
-	defer array.mutex.Unlock()
-
-	//fmt.Println(array.elements, "<--", element)
+	array.Lock()
+	defer array.Unlock()
 
 	array.elements = append(array.elements, element)
+
+	log.Println(array.elements, "<--", element)
 }
 
 func (array *Array) Pop() (int, bool) {
 	if len(array.elements) > 0 {
 		element := array.elements[len(array.elements)-1]
 
-		array.mutex.Lock()
+		array.Lock()
+
 		array.elements = array.elements[:len(array.elements)-1]
-		//fmt.Println(array.elements, "-->", element)
-		array.mutex.Unlock()
+
+		log.Println(array.elements, "-->", element)
+
+		array.Unlock()
 
 		return element, true
 	} else {
@@ -39,5 +42,5 @@ func (array *Array) Pop() (int, bool) {
 }
 
 func (array *Array) Print() {
-	fmt.Println(array.elements)
+	log.Println(array.elements)
 }

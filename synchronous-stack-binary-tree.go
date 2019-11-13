@@ -16,14 +16,10 @@ func consumeStackBinaryTree(myStack *stack.BinaryTree, n int) {
 	}
 }
 
-func synchronousStackBinaryTree() {
+func SynchronousStackBinaryTree() {
 	myStack := &stack.BinaryTree{}
 	n := 20
 
 	produceStackBinaryTree(myStack, n)
 	consumeStackBinaryTree(myStack, n)
 }
-
-//func main() {
-//	synchronousStackBinaryTree()
-//}

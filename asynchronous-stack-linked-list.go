@@ -24,7 +24,7 @@ func consumeStackLinkedListAsync(myStack *stack.LinkedList, n int, waitGroup *sy
 	waitGroup.Done()
 }
 
-func asynchronousStackLinkedList() {
+func AsynchronousStackLinkedList() {
 	waitGroup := new(sync.WaitGroup)
 	myStack := &stack.LinkedList{}
 	n := 20
@@ -37,7 +37,3 @@ func asynchronousStackLinkedList() {
 
 	waitGroup.Wait()
 }
-
-//func main() {s
-//	asynchronousStackLinkedList()
-//}

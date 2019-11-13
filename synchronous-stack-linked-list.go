@@ -16,14 +16,10 @@ func consumeStackLinkedList(myStack *stack.LinkedList, n int) {
 	}
 }
 
-func synchronousStackLinkedList() {
+func SynchronousStackLinkedList() {
 	myStack := &stack.LinkedList{}
 	n := 20
 
 	produceStackLinkedList(myStack, n)
 	consumeStackLinkedList(myStack, n)
 }
-
-//func main() {
-//	synchronousStackLinkedList()
-//}

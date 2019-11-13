@@ -28,7 +28,7 @@ func consumerChannel(bowl chan string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func producerConsumerChannel() {
+func ProducerConsumerChannel() {
 	bowl := make(chan string)
 	waitGroup := new(sync.WaitGroup)
 

@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"log"
 	"sync"
 )
 
@@ -12,18 +13,16 @@ type BinaryTreeNode struct {
 }
 
 type BinaryTree struct {
+	sync.RWMutex
 	root      *BinaryTreeNode
 	nextIndex int
-	mutex     sync.RWMutex
 }
 
 func (binaryTree *BinaryTree) Push(element int) {
-	binaryTree.mutex.Lock()
-	defer binaryTree.mutex.Unlock()
-
-	//fmt.Println("<--", element)
-
 	node := &BinaryTreeNode{element, nil, nil, nil}
+
+	binaryTree.Lock()
+	defer binaryTree.Unlock()
 
 	if binaryTree.root == nil {
 		binaryTree.root = node
@@ -38,15 +37,16 @@ func (binaryTree *BinaryTree) Push(element int) {
 	}
 
 	binaryTree.nextIndex++
+
+	log.Println("<--", element)
 }
 
 func (binaryTree *BinaryTree) Pop() (int, bool) {
-	binaryTree.mutex.Lock()
-	defer binaryTree.mutex.Unlock()
-
 	if binaryTree.root == nil {
 		return 0, false
 	} else {
+		binaryTree.Lock()
+
 		lastNodeIndex := binaryTree.nextIndex - 1
 		lastNode := binaryTree.findNode(lastNodeIndex)
 
@@ -62,7 +62,9 @@ func (binaryTree *BinaryTree) Pop() (int, bool) {
 
 		binaryTree.nextIndex--
 
-		//fmt.Println("-->", lastNode.value)
+		log.Println("-->", lastNode.value)
+
+		binaryTree.Unlock()
 
 		return lastNode.value, true
 	}

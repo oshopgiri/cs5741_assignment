@@ -24,18 +24,8 @@ func (array *Array) InitArray(size int) {
 }
 
 func (array *Array) Write(element int) bool {
-	if array.writePointer == array.readPointer {
-		if array.elements[array.writePointer] == -1 {
-			array.mutex.Lock()
-			array.elements[array.writePointer] = element
-			//fmt.Println(array.elements, "<--", element)
-			array.writePointer = array.nextIndex(array.writePointer)
-			array.mutex.Unlock()
-
-			return true
-		} else {
-			return false
-		}
+	if (array.writePointer == array.readPointer) && (array.elements[array.writePointer] != -1) {
+		return false
 	} else {
 		array.mutex.Lock()
 		array.elements[array.writePointer] = element

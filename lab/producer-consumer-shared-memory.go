@@ -33,7 +33,7 @@ func consumerSharedMemory(bowl []string, waitGroup *sync.WaitGroup) {
 	waitGroup.Done()
 }
 
-func producerConsumerSharedMemory() {
+func ProducerConsumerSharedMemory() {
 	bowl := make([]string, 100)
 	waitGroup := new(sync.WaitGroup)
 
