@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/oshopgiri/assignments/stack"
-	"time"
 )
 
 func produceStackBinaryTree(myStack *stack.BinaryTree, n int) {
@@ -13,11 +12,7 @@ func produceStackBinaryTree(myStack *stack.BinaryTree, n int) {
 
 func consumeStackBinaryTree(myStack *stack.BinaryTree, n int) {
 	for i := 1; i <= n; i++ {
-		if _, ok := myStack.Pop(); ok {
-		} else {
-			i--
-			time.Sleep(1)
-		}
+		myStack.Pop()
 	}
 }
 
