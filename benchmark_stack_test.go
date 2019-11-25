@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/oshopgiri/assignments/stack"
 	"io/ioutil"
 	"log"
 	"testing"
@@ -12,36 +13,36 @@ func BenchmarkMain(b *testing.B) {
 
 func BenchmarkAsynchronousStackArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStackArray()
+		AsynchronousStack(10000, &stack.Array{})
 	}
 }
 
 func BenchmarkSynchronousStackArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousStackArray()
+		SynchronousStack(10000, &stack.Array{})
 	}
 }
 
 func BenchmarkAsynchronousStackLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStackLinkedList()
+		AsynchronousStack(10000, &stack.LinkedList{})
 	}
 }
 
 func BenchmarkSynchronousStackLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousStackLinkedList()
+		SynchronousStack(10000, &stack.LinkedList{})
 	}
 }
 
 func BenchmarkAsynchronousStackBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStackBinaryTree()
+		AsynchronousStack(10000, &stack.BinaryTree{})
 	}
 }
 
 func BenchmarkSynchronousStackBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousStackBinaryTree()
+		SynchronousStack(10000, &stack.BinaryTree{})
 	}
 }

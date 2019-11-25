@@ -4,39 +4,59 @@ import (
 	"log"
 	"strconv"
 	"sync"
+	"time"
 )
 
-type LinkedListNode struct {
+type linkedListNode struct {
 	value    int
-	previous *LinkedListNode
-	next     *LinkedListNode
+	previous *linkedListNode
+	next     *linkedListNode
 }
 
 type LinkedList struct {
-	lastNode *LinkedListNode
-	mutex    sync.RWMutex
+	lastNode *linkedListNode
+	sync.RWMutex
 }
 
-func (linkedList *LinkedList) Push(element int) {
-	node := &LinkedListNode{element, linkedList.lastNode, nil}
+func (linkedList *LinkedList) Init() {}
 
-	linkedList.mutex.Lock()
-	defer linkedList.mutex.Unlock()
+func (linkedList *LinkedList) Push(element int, waitGroup *sync.WaitGroup) {
+	if waitGroup != nil {
+		defer waitGroup.Done()
+
+		linkedList.Lock()
+		defer linkedList.Unlock()
+	}
+
+	node := &linkedListNode{element, linkedList.lastNode, nil}
 
 	if linkedList.lastNode != nil {
 		linkedList.lastNode.next = node
 	}
+
 	linkedList.lastNode = node
 
 	log.Println("<--", element)
 }
 
-func (linkedList *LinkedList) Pop() (int, bool) {
+func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (int, bool) {
+	if waitGroup != nil {
+		defer waitGroup.Done()
+
+		linkedList.Lock()
+		defer linkedList.Unlock()
+	}
+
 	if linkedList.lastNode == nil {
+		if waitGroup != nil {
+			time.Sleep(1)
+
+			waitGroup.Add(1)
+			go linkedList.Pop(waitGroup)
+		}
+
 		return 0, false
 	} else {
-		linkedList.mutex.Lock()
-
 		lastNode := linkedList.lastNode
 		if lastNode.previous == nil {
 			linkedList.lastNode = nil
@@ -46,8 +66,6 @@ func (linkedList *LinkedList) Pop() (int, bool) {
 		}
 
 		log.Println("-->", lastNode.value)
-
-		linkedList.mutex.Unlock()
 
 		return lastNode.value, true
 	}
@@ -69,6 +87,6 @@ func (linkedList *LinkedList) Print() {
 	log.Println(listItems)
 }
 
-func (linkedListNode *LinkedListNode) Print() {
+func (linkedListNode *linkedListNode) Print() {
 
 }

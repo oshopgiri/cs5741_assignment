@@ -1,7 +1,10 @@
 package stack
 
+import "sync"
+
 type Stack interface {
-	Push(int)
-	Pop() (int, bool)
+	Init()
+	Push(int, *sync.WaitGroup)
+	Pop(*sync.WaitGroup) (int, bool)
 	Print()
 }

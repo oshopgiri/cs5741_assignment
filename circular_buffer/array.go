@@ -13,7 +13,7 @@ type Array struct {
 	mutex        sync.RWMutex
 }
 
-func (array *Array) InitArray(size int) {
+func (array *Array) Init(size int) {
 	array.size = size
 	array.elements = make([]int, size)
 	for i := range array.elements {

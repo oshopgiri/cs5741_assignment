@@ -3,26 +3,33 @@ package stack
 import (
 	"log"
 	"sync"
+	"time"
 )
 
-type BinaryTreeNode struct {
+type binaryTreeNode struct {
 	value     int
-	parent    *BinaryTreeNode
-	leftNode  *BinaryTreeNode
-	rightNode *BinaryTreeNode
+	parent    *binaryTreeNode
+	leftNode  *binaryTreeNode
+	rightNode *binaryTreeNode
 }
 
 type BinaryTree struct {
-	sync.RWMutex
-	root      *BinaryTreeNode
+	root      *binaryTreeNode
 	nextIndex int
+	sync.RWMutex
 }
 
-func (binaryTree *BinaryTree) Push(element int) {
-	node := &BinaryTreeNode{element, nil, nil, nil}
+func (binaryTree *BinaryTree) Init() {}
 
-	binaryTree.Lock()
-	defer binaryTree.Unlock()
+func (binaryTree *BinaryTree) Push(element int, waitGroup *sync.WaitGroup) {
+	if waitGroup != nil {
+		defer waitGroup.Done()
+
+		binaryTree.Lock()
+		defer binaryTree.Unlock()
+	}
+
+	node := &binaryTreeNode{element, nil, nil, nil}
 
 	if binaryTree.root == nil {
 		binaryTree.root = node
@@ -41,12 +48,24 @@ func (binaryTree *BinaryTree) Push(element int) {
 	log.Println("<--", element)
 }
 
-func (binaryTree *BinaryTree) Pop() (int, bool) {
+func (binaryTree *BinaryTree) Pop(waitGroup *sync.WaitGroup) (int, bool) {
+	if waitGroup != nil {
+		defer waitGroup.Done()
+
+		binaryTree.Lock()
+		defer binaryTree.Unlock()
+	}
+
 	if binaryTree.root == nil {
+		if waitGroup != nil {
+			time.Sleep(1)
+
+			waitGroup.Add(1)
+			go binaryTree.Pop(waitGroup)
+		}
+
 		return 0, false
 	} else {
-		binaryTree.Lock()
-
 		lastNodeIndex := binaryTree.nextIndex - 1
 		lastNode := binaryTree.findNode(lastNodeIndex)
 
@@ -64,16 +83,15 @@ func (binaryTree *BinaryTree) Pop() (int, bool) {
 
 		log.Println("-->", lastNode.value)
 
-		binaryTree.Unlock()
-
 		return lastNode.value, true
 	}
 }
 
-func (binaryTree *BinaryTree) Print() {
-}
+func (binaryTree *BinaryTree) Print() {}
 
-func (binaryTree *BinaryTree) findNode(nodeIndex int) *BinaryTreeNode {
+func (binaryTreeNode *binaryTreeNode) Print() {}
+
+func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
 	if nodeIndex == 0 {
 		return binaryTree.root
 	} else if nodeIndex > 0 {
