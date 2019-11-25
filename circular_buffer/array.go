@@ -2,53 +2,75 @@ package circular_buffer
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
 type Array struct {
-	elements     []int
+	elements     []interface{}
 	size         int
 	readPointer  int
 	writePointer int
-	mutex        sync.RWMutex
+	sync.RWMutex
 }
 
 func (array *Array) Init(size int) {
 	array.size = size
-	array.elements = make([]int, size)
-	for i := range array.elements {
-		array.elements[i] = -1
-	}
+	array.elements = make([]interface{}, size)
+	//for i := range array.elements {
+	//	array.elements[i] = nil
+	//}
 	array.readPointer = 0
 	array.writePointer = 0
 }
 
-func (array *Array) Write(element int) bool {
-	if (array.writePointer == array.readPointer) && (array.elements[array.writePointer] != -1) {
-		return false
-	} else {
-		array.mutex.Lock()
+func (array *Array) Write(element interface{}, waitGroup *sync.WaitGroup) bool {
+	if waitGroup != nil {
+		defer waitGroup.Done()
+
+		array.Lock()
+		defer array.Unlock()
+	}
+
+	if (array.elements[array.writePointer] == nil) {
 		array.elements[array.writePointer] = element
-		//fmt.Println(array.elements, "<--", element)
 		array.writePointer = array.nextIndex(array.writePointer)
-		array.mutex.Unlock()
+
+		log.Println(array.elements, "<--", element)
 
 		return true
+	} else {
+		if waitGroup != nil {
+			waitGroup.Add(1)
+			go array.Write(element, waitGroup)
+		}
+
+		return false
 	}
 }
 
-func (array *Array) Read() (int, bool) {
-	if array.elements[array.readPointer] != 0 {
-		element := array.elements[array.readPointer]
+func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
+	if waitGroup != nil {
+		defer waitGroup.Done()
 
-		array.mutex.Lock()
-		array.elements[array.readPointer] = -1
-		//fmt.Println(array.elements, "-->", element)
+		array.Lock()
+		defer array.Unlock()
+	}
+
+	if array.elements[array.readPointer] != nil {
+		element := array.elements[array.readPointer]
+		array.elements[array.readPointer] = nil
 		array.readPointer = array.nextIndex(array.readPointer)
-		array.mutex.Unlock()
+
+		log.Println(array.elements, "-->", element)
 
 		return element, true
 	} else {
+		if waitGroup != nil {
+			waitGroup.Add(1)
+			go array.Read(waitGroup)
+		}
+
 		return 0, false
 	}
 }

@@ -4,7 +4,7 @@ import "sync"
 
 type Stack interface {
 	Init()
-	Push(int, *sync.WaitGroup)
-	Pop(*sync.WaitGroup) (int, bool)
+	Push(interface{}, *sync.WaitGroup)
+	Pop(*sync.WaitGroup) (interface{}, bool)
 	Print()
 }

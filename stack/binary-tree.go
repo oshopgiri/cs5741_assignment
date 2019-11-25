@@ -3,11 +3,10 @@ package stack
 import (
 	"log"
 	"sync"
-	"time"
 )
 
 type binaryTreeNode struct {
-	value     int
+	value     interface{}
 	parent    *binaryTreeNode
 	leftNode  *binaryTreeNode
 	rightNode *binaryTreeNode
@@ -21,7 +20,7 @@ type BinaryTree struct {
 
 func (binaryTree *BinaryTree) Init() {}
 
-func (binaryTree *BinaryTree) Push(element int, waitGroup *sync.WaitGroup) {
+func (binaryTree *BinaryTree) Push(element interface{}, waitGroup *sync.WaitGroup) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -48,7 +47,7 @@ func (binaryTree *BinaryTree) Push(element int, waitGroup *sync.WaitGroup) {
 	log.Println("<--", element)
 }
 
-func (binaryTree *BinaryTree) Pop(waitGroup *sync.WaitGroup) (int, bool) {
+func (binaryTree *BinaryTree) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -58,8 +57,6 @@ func (binaryTree *BinaryTree) Pop(waitGroup *sync.WaitGroup) (int, bool) {
 
 	if binaryTree.root == nil {
 		if waitGroup != nil {
-			time.Sleep(1)
-
 			waitGroup.Add(1)
 			go binaryTree.Pop(waitGroup)
 		}

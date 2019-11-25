@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func produceStackArrayAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
+func produceStackAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
 	stackWaitGroup := new(sync.WaitGroup)
 
 	for i := 1; i <= count; i++ {
@@ -17,7 +17,7 @@ func produceStackArrayAsync(myStack stack.Stack, count int, waitGroup *sync.Wait
 	waitGroup.Done()
 }
 
-func consumeStackArrayAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
+func consumeStackAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
 	stackWaitGroup := new(sync.WaitGroup)
 
 	for i := 1; i <= count; i++ {
@@ -34,10 +34,10 @@ func AsynchronousStack(count int, myStack stack.Stack) {
 	myStack.Init()
 
 	waitGroup.Add(1)
-	go consumeStackArrayAsync(myStack, count, waitGroup)
+	go consumeStackAsync(myStack, count, waitGroup)
 
 	waitGroup.Add(1)
-	go produceStackArrayAsync(myStack, count, waitGroup)
+	go produceStackAsync(myStack, count, waitGroup)
 
 	waitGroup.Wait()
 }

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func BenchmarkMain(b *testing.B) {
+func BenchmarkStackMain(b *testing.B) {
 	log.SetOutput(ioutil.Discard)
 }
 

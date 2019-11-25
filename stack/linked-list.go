@@ -2,13 +2,11 @@ package stack
 
 import (
 	"log"
-	"strconv"
 	"sync"
-	"time"
 )
 
 type linkedListNode struct {
-	value    int
+	value    interface{}
 	previous *linkedListNode
 	next     *linkedListNode
 }
@@ -20,7 +18,7 @@ type LinkedList struct {
 
 func (linkedList *LinkedList) Init() {}
 
-func (linkedList *LinkedList) Push(element int, waitGroup *sync.WaitGroup) {
+func (linkedList *LinkedList) Push(element interface{}, waitGroup *sync.WaitGroup) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -39,7 +37,7 @@ func (linkedList *LinkedList) Push(element int, waitGroup *sync.WaitGroup) {
 	log.Println("<--", element)
 }
 
-func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (int, bool) {
+func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -49,8 +47,6 @@ func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (int, bool) {
 
 	if linkedList.lastNode == nil {
 		if waitGroup != nil {
-			time.Sleep(1)
-
 			waitGroup.Add(1)
 			go linkedList.Pop(waitGroup)
 		}
@@ -80,7 +76,7 @@ func (linkedList *LinkedList) Print() {
 		} else {
 			listItems = " --> " + listItems
 		}
-		listItems = strconv.Itoa(currentNode.value) + listItems
+		listItems = currentNode.value.(string) + listItems
 		currentNode = currentNode.previous
 	}
 

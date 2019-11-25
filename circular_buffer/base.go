@@ -1,7 +1,10 @@
 package circular_buffer
 
+import "sync"
+
 type CircularBuffer interface {
-	Write(int) bool
-	Read() (int, bool)
+	Init(int)
+	Write(interface{}, *sync.WaitGroup) bool
+	Read(*sync.WaitGroup) (interface{}, bool)
 	Print()
 }

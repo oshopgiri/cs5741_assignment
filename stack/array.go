@@ -3,19 +3,16 @@ package stack
 import (
 	"log"
 	"sync"
-	"time"
 )
 
 type Array struct {
-	elements []int
+	elements []interface{}
 	sync.RWMutex
 }
 
-func (array *Array) Init() {
-	array.elements = []int{}
-}
+func (array *Array) Init() {}
 
-func (array *Array) Push(element int, waitGroup *sync.WaitGroup) {
+func (array *Array) Push(element interface{}, waitGroup *sync.WaitGroup) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -28,7 +25,7 @@ func (array *Array) Push(element int, waitGroup *sync.WaitGroup) {
 	log.Println(array.elements, "<--", element)
 }
 
-func (array *Array) Pop(waitGroup *sync.WaitGroup) (int, bool) {
+func (array *Array) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
 	if waitGroup != nil {
 		defer waitGroup.Done()
 
@@ -46,8 +43,6 @@ func (array *Array) Pop(waitGroup *sync.WaitGroup) (int, bool) {
 		return element, true
 	} else {
 		if waitGroup != nil {
-			time.Sleep(1)
-
 			waitGroup.Add(1)
 			go array.Pop(waitGroup)
 		}
