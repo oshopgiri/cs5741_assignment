@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"log"
+	"fmt"
 	"sync"
 )
 
@@ -34,7 +34,7 @@ func (linkedList *LinkedList) Push(element interface{}, waitGroup *sync.WaitGrou
 
 	linkedList.lastNode = node
 
-	log.Println("<--", element)
+	fmt.Println("<--", element)
 }
 
 func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
@@ -51,7 +51,7 @@ func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (interface{}, bool)
 			go linkedList.Pop(waitGroup)
 		}
 
-		return 0, false
+		return nil, false
 	} else {
 		lastNode := linkedList.lastNode
 		if lastNode.previous == nil {
@@ -61,7 +61,7 @@ func (linkedList *LinkedList) Pop(waitGroup *sync.WaitGroup) (interface{}, bool)
 			linkedList.lastNode.next = nil
 		}
 
-		log.Println("-->", lastNode.value)
+		fmt.Println("-->", lastNode.value)
 
 		return lastNode.value, true
 	}
@@ -80,9 +80,9 @@ func (linkedList *LinkedList) Print() {
 		currentNode = currentNode.previous
 	}
 
-	log.Println(listItems)
+	fmt.Println(listItems)
 }
 
-func (linkedListNode *linkedListNode) Print() {
+func (linkedListNode *linkedListNode) print() {
 
 }

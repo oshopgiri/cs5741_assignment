@@ -23,7 +23,7 @@ func VaryingThreads() {
 	}
 	waitGroup.Wait()
 	elapsed := time.Since(start)
-	log.Printf("With %d threads took %s", runtime.GOMAXPROCS(0), elapsed)
+	fmt.Printf("With %d threads took %s", runtime.GOMAXPROCS(0), elapsed)
 
 	runtime.GOMAXPROCS(2)
 	var data2 []int
@@ -34,5 +34,5 @@ func VaryingThreads() {
 	}
 	waitGroup.Wait()
 	elapsed = time.Since(start)
-	log.Printf("With %d threads took %s", runtime.GOMAXPROCS(0), elapsed)
+	fmt.Printf("With %d threads took %s", runtime.GOMAXPROCS(0), elapsed)
 }

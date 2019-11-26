@@ -2,7 +2,6 @@ package circular_buffer
 
 import (
 	"fmt"
-	"log"
 	"sync"
 )
 
@@ -17,9 +16,6 @@ type Array struct {
 func (array *Array) Init(size int) {
 	array.size = size
 	array.elements = make([]interface{}, size)
-	//for i := range array.elements {
-	//	array.elements[i] = nil
-	//}
 	array.readPointer = 0
 	array.writePointer = 0
 }
@@ -36,7 +32,7 @@ func (array *Array) Write(element interface{}, waitGroup *sync.WaitGroup) bool {
 		array.elements[array.writePointer] = element
 		array.writePointer = array.nextIndex(array.writePointer)
 
-		log.Println(array.elements, "<--", element)
+		fmt.Println(array.elements, "<--", element)
 
 		return true
 	} else {
@@ -62,7 +58,7 @@ func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
 		array.elements[array.readPointer] = nil
 		array.readPointer = array.nextIndex(array.readPointer)
 
-		log.Println(array.elements, "-->", element)
+		fmt.Println(array.elements, "-->", element)
 
 		return element, true
 	} else {
@@ -71,7 +67,7 @@ func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
 			go array.Read(waitGroup)
 		}
 
-		return 0, false
+		return nil, false
 	}
 }
 

@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"log"
+	"fmt"
 	"sync"
 )
 
@@ -22,7 +22,7 @@ func (array *Array) Push(element interface{}, waitGroup *sync.WaitGroup) {
 
 	array.elements = append(array.elements, element)
 
-	log.Println(array.elements, "<--", element)
+	fmt.Println(array.elements, "<--", element)
 }
 
 func (array *Array) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
@@ -38,7 +38,7 @@ func (array *Array) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
 
 		array.elements = array.elements[:len(array.elements)-1]
 
-		log.Println(array.elements, "-->", element)
+		fmt.Println(array.elements, "-->", element)
 
 		return element, true
 	} else {
@@ -47,10 +47,10 @@ func (array *Array) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
 			go array.Pop(waitGroup)
 		}
 
-		return 0, false
+		return nil, false
 	}
 }
 
 func (array *Array) Print() {
-	log.Println(array.elements)
+	fmt.Println(array.elements)
 }

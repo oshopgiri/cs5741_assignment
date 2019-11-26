@@ -4,11 +4,13 @@ import (
 	"github.com/oshopgiri/assignments/stack"
 	"io/ioutil"
 	"log"
+	"os"
 	"testing"
 )
 
 func BenchmarkStackMain(b *testing.B) {
 	log.SetOutput(ioutil.Discard)
+	os.Stdout, _ = os.Open(os.DevNull)
 }
 
 func BenchmarkAsynchronousStackArray(b *testing.B) {
