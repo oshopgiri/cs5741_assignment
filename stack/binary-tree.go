@@ -12,6 +12,8 @@ type binaryTreeNode struct {
 	rightNode *binaryTreeNode
 }
 
+func (node *binaryTreeNode) print() {}
+
 type BinaryTree struct {
 	root      *binaryTreeNode
 	nextIndex int
@@ -20,14 +22,7 @@ type BinaryTree struct {
 
 func (binaryTree *BinaryTree) Init() {}
 
-func (binaryTree *BinaryTree) Push(element interface{}, waitGroup *sync.WaitGroup) {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		binaryTree.Lock()
-		defer binaryTree.Unlock()
-	}
-
+func (binaryTree *BinaryTree) Push(element interface{}) {
 	node := &binaryTreeNode{element, nil, nil, nil}
 
 	if binaryTree.root == nil {
@@ -43,50 +38,53 @@ func (binaryTree *BinaryTree) Push(element interface{}, waitGroup *sync.WaitGrou
 	}
 
 	binaryTree.nextIndex++
-
-	fmt.Println("<--", element)
 }
 
-func (binaryTree *BinaryTree) Pop(waitGroup *sync.WaitGroup) (interface{}, bool) {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		binaryTree.Lock()
-		defer binaryTree.Unlock()
-	}
-
+func (binaryTree *BinaryTree) Pop() (interface{}, bool) {
 	if binaryTree.root == nil {
-		if waitGroup != nil {
-			waitGroup.Add(1)
-			go binaryTree.Pop(waitGroup)
-		}
-
 		return nil, false
-	} else {
-		lastNodeIndex := binaryTree.nextIndex - 1
-		lastNode := binaryTree.findNode(lastNodeIndex)
-
-		if lastNodeIndex == 0 {
-			binaryTree.root = nil
-		} else {
-			if lastNodeIndex%2 == 0 {
-				lastNode.parent.rightNode = nil
-			} else {
-				lastNode.parent.leftNode = nil
-			}
-		}
-
-		binaryTree.nextIndex--
-
-		fmt.Println("-->", lastNode.value)
-
-		return lastNode.value, true
 	}
+
+	lastNodeIndex := binaryTree.nextIndex - 1
+	lastNode := binaryTree.findNode(lastNodeIndex)
+
+	if lastNodeIndex == 0 {
+		binaryTree.root = nil
+	} else {
+		if lastNodeIndex%2 == 0 {
+			lastNode.parent.rightNode = nil
+		} else {
+			lastNode.parent.leftNode = nil
+		}
+	}
+
+	binaryTree.nextIndex--
+
+	return lastNode.value, true
 }
 
-func (binaryTree *BinaryTree) Print() {}
+func (binaryTree *BinaryTree) Print() {
+	binaryTree.print(binaryTree.root)
+}
 
-func (binaryTreeNode *binaryTreeNode) print() {}
+func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
+	if node == nil {
+		return
+	}
+
+	if node.parent == nil {
+		fmt.Printf("%4v | %v | %v \n", "root", node.value, nil)
+	} else {
+		if node == node.parent.leftNode {
+			fmt.Printf("%4v | %v | %v \n", "L", node.value, node.parent.value)
+		} else {
+			fmt.Printf("%4v | %v | %v \n", "R", node.value, node.parent.value)
+		}
+	}
+
+	binaryTree.print(node.leftNode)
+	binaryTree.print(node.rightNode)
+}
 
 func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
 	if nodeIndex == 0 {
@@ -123,4 +121,28 @@ func (binaryTree *BinaryTree) findPathToRoot(nodeIndex int) []int {
 	}
 
 	return pathToRoot
+}
+
+func (binaryTree *BinaryTree) findLevels() int {
+	if binaryTree.root == nil {
+		return 0
+	}
+
+	currentIndex := binaryTree.nextIndex - 1
+	start := 0
+	end := 0
+	levels := 0
+
+	for {
+		levels++
+
+		if currentIndex >= start && currentIndex <= end {
+			break
+		}
+
+		start += start + 1
+		end += end + 2
+	}
+
+	return levels
 }
