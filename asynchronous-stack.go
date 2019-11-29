@@ -2,42 +2,44 @@ package main
 
 import (
 	"github.com/oshopgiri/assignments/stack"
+	"runtime"
 	"sync"
 )
 
-func produceStackAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
-	stackWaitGroup := new(sync.WaitGroup)
-
-	for i := 1; i <= count; i++ {
-		stackWaitGroup.Add(1)
-		go myStack.Push(i, stackWaitGroup)
+func produceStackAsync(stackOperations stack.IStackOperations, start, end int, waitGroup *sync.WaitGroup) {
+	for i := start; i <= end; i++ {
+		stackOperations.Push(i)
 	}
 
-	stackWaitGroup.Wait()
 	waitGroup.Done()
 }
 
-func consumeStackAsync(myStack stack.Stack, count int, waitGroup *sync.WaitGroup) {
-	stackWaitGroup := new(sync.WaitGroup)
-
-	for i := 1; i <= count; i++ {
-		stackWaitGroup.Add(1)
-		go myStack.Pop(stackWaitGroup)
+func consumeStackAsync(stackOperations stack.IStackOperations, start, end int, waitGroup *sync.WaitGroup) {
+	for i := start; i <= end; i++ {
+		if ok := stackOperations.Pop(); !ok {
+			i--
+		}
 	}
 
-	stackWaitGroup.Wait()
 	waitGroup.Done()
 }
 
 func AsynchronousStack(count int, myStack stack.Stack) {
 	waitGroup := new(sync.WaitGroup)
-	myStack.Init()
+	var stackOperations stack.IStackOperations = &stack.StackOperations{}
+	stackOperations.Init(myStack)
 
-	waitGroup.Add(1)
-	go consumeStackAsync(myStack, count, waitGroup)
+	threadsPerOperation := runtime.GOMAXPROCS(0) / 2
+	inputsPerOperation := count / threadsPerOperation
 
-	waitGroup.Add(1)
-	go produceStackAsync(myStack, count, waitGroup)
+	for i := 0; i < threadsPerOperation; i++ {
+		waitGroup.Add(1)
+		go consumeStackAsync(stackOperations, i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1, waitGroup)
+
+		waitGroup.Add(1)
+		go produceStackAsync(stackOperations, i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1, waitGroup)
+
+	}
 
 	waitGroup.Wait()
 }

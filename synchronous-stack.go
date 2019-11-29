@@ -4,21 +4,22 @@ import (
 	"github.com/oshopgiri/assignments/stack"
 )
 
-func produceStackArray(myStack stack.Stack, count int) {
+func produceStackArray(stackOperations stack.IStackOperations, count int) {
 	for i := 1; i <= count; i++ {
-		myStack.Push(i, nil)
+		stackOperations.Push(i)
 	}
 }
 
-func consumeStackArray(myStack stack.Stack, count int) {
+func consumeStackArray(stackOperations stack.IStackOperations, count int) {
 	for i := 1; i <= count; i++ {
-		myStack.Pop(nil)
+		stackOperations.Pop()
 	}
 }
 
 func SynchronousStack(count int, myStack stack.Stack) {
-	myStack.Init()
+	var stackOperations stack.IStackOperations = &stack.StackOperations{}
+	stackOperations.Init(myStack)
 
-	produceStackArray(myStack, count)
-	consumeStackArray(myStack, count)
+	produceStackArray(stackOperations, count)
+	consumeStackArray(stackOperations, count)
 }
