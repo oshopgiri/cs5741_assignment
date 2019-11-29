@@ -28,11 +28,13 @@ func (array *Array) Write(element interface{}, waitGroup *sync.WaitGroup) bool {
 		defer array.Unlock()
 	}
 
-	if (array.elements[array.writePointer] == nil) {
+	if array.elements[array.writePointer] == nil {
 		array.elements[array.writePointer] = element
 		array.writePointer = array.nextIndex(array.writePointer)
 
-		fmt.Println(array.elements, "<--", element)
+		fmt.Println("WRITE", element)
+		array.Print()
+		fmt.Println()
 
 		return true
 	} else {
@@ -58,7 +60,9 @@ func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
 		array.elements[array.readPointer] = nil
 		array.readPointer = array.nextIndex(array.readPointer)
 
-		fmt.Println(array.elements, "-->", element)
+		fmt.Println("READ", element)
+		array.Print()
+		fmt.Println()
 
 		return element, true
 	} else {
@@ -72,7 +76,17 @@ func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
 }
 
 func (array *Array) Print() {
-	fmt.Println(array.elements)
+	for i := 0; i < len(array.elements); i++ {
+		fmt.Printf("%5v", array.elements[i])
+		if i == array.readPointer {
+			fmt.Print(" <-- readPointer")
+		}
+
+		if i == array.writePointer {
+			fmt.Print(" <-- writePointer")
+		}
+		fmt.Println()
+	}
 }
 
 func (array *Array) nextIndex(currentIndex int) int {

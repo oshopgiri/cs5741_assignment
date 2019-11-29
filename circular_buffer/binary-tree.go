@@ -12,6 +12,33 @@ type binaryTreeNode struct {
 	rightNode *binaryTreeNode
 }
 
+func (node *binaryTreeNode) print(readPointerNode, writePointerNode *binaryTreeNode) {
+	direction := ""
+	var parentValue interface{}
+
+	if node.parent == nil {
+		direction = "root"
+		parentValue = nil
+	} else {
+		if node == node.parent.leftNode {
+			direction = "L"
+		} else if node == node.parent.rightNode {
+			direction = "R"
+		}
+		parentValue = node.parent.value
+	}
+
+	fmt.Printf("%4v | %5v | %5v", direction, node.value, parentValue)
+	if node == readPointerNode {
+		fmt.Print(" <-- readPointer")
+	}
+	if node == writePointerNode {
+		fmt.Print(" <-- writePointer")
+	}
+
+	fmt.Println()
+}
+
 type BinaryTree struct {
 	root         *binaryTreeNode
 	readPointer  int
@@ -33,7 +60,7 @@ func (binaryTree *BinaryTree) Init(size int) {
 			} else {
 				parent.leftNode = node
 			}
-			node.parent = node
+			node.parent = parent
 		}
 	}
 
@@ -55,7 +82,9 @@ func (binaryTree *BinaryTree) Write(element interface{}, waitGroup *sync.WaitGro
 		writeNode.value = element
 		binaryTree.writePointer = (binaryTree.writePointer + 1) % binaryTree.size
 
-		fmt.Println("<--", element)
+		fmt.Println("WRITE", element)
+		binaryTree.Print()
+		fmt.Println()
 
 		return true
 	} else {
@@ -83,7 +112,9 @@ func (binaryTree *BinaryTree) Read(waitGroup *sync.WaitGroup) (interface{}, bool
 		readNode.value = nil
 		binaryTree.readPointer = (binaryTree.readPointer + 1) % binaryTree.size
 
-		fmt.Println("-->", element)
+		fmt.Println("READ", element)
+		binaryTree.Print()
+		fmt.Println()
 
 		return element, true
 	} else {
@@ -96,9 +127,22 @@ func (binaryTree *BinaryTree) Read(waitGroup *sync.WaitGroup) (interface{}, bool
 	}
 }
 
-func (binaryTree *BinaryTree) Print() {}
+func (binaryTree *BinaryTree) Print() {
+	binaryTree.print(binaryTree.root)
+}
 
-func (binaryTreeNode *binaryTreeNode) print() {}
+func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
+	if node == nil {
+		return
+	}
+
+	readPointerNode := binaryTree.findNode(binaryTree.readPointer)
+	writePointerNode := binaryTree.findNode(binaryTree.writePointer)
+	node.print(readPointerNode, writePointerNode)
+
+	binaryTree.print(node.leftNode)
+	binaryTree.print(node.rightNode)
+}
 
 func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
 	if nodeIndex == 0 {

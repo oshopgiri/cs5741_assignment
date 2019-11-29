@@ -11,6 +11,10 @@ type linkedListNode struct {
 	next     *linkedListNode
 }
 
+func (node *linkedListNode) print() {
+	fmt.Printf("| %5v |", node.value)
+}
+
 type LinkedList struct {
 	firstNode    *linkedListNode
 	lastNode     *linkedListNode
@@ -51,7 +55,7 @@ func (linkedList *LinkedList) Write(element interface{}, waitGroup *sync.WaitGro
 		linkedList.writePointer.value = element
 		linkedList.writePointer = linkedList.writePointer.next
 
-		fmt.Println("WRITE ", element)
+		fmt.Println("WRITE", element)
 		linkedList.Print()
 		fmt.Println()
 
@@ -79,7 +83,7 @@ func (linkedList *LinkedList) Read(waitGroup *sync.WaitGroup) (interface{}, bool
 		linkedList.readPointer.value = nil
 		linkedList.readPointer = linkedList.readPointer.next
 
-		fmt.Println("READ ", element)
+		fmt.Println("READ", element)
 		linkedList.Print()
 		fmt.Println()
 
@@ -99,19 +103,22 @@ func (linkedList *LinkedList) Print() {
 
 	for {
 		currentNode.print()
+		if currentNode == linkedList.readPointer {
+			fmt.Print(" <-- readPointer")
+		}
+		if currentNode == linkedList.writePointer {
+			fmt.Print(" <-- writePointer")
+		}
+		fmt.Println()
 
 		if currentNode == linkedList.lastNode {
 			break
 		} else {
-			fmt.Print("->")
+			fmt.Printf("%5v\n", "↓")
 		}
 
 		currentNode = currentNode.next
 	}
 
 	fmt.Println()
-}
-
-func (linkedListNode *linkedListNode) print() {
-	fmt.Printf("|%6v|", linkedListNode.value)
 }

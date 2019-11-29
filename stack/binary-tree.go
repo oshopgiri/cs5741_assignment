@@ -12,7 +12,24 @@ type binaryTreeNode struct {
 	rightNode *binaryTreeNode
 }
 
-func (node *binaryTreeNode) print() {}
+func (node *binaryTreeNode) print() {
+	direction := ""
+	var parentValue interface{}
+
+	if node.parent == nil {
+		direction = "root"
+		parentValue = nil
+	} else {
+		if node == node.parent.leftNode {
+			direction = "L"
+		} else if node == node.parent.rightNode {
+			direction = "R"
+		}
+		parentValue = node.parent.value
+	}
+
+	fmt.Printf("%4v | %5v | %5v \n", direction, node.value, parentValue)
+}
 
 type BinaryTree struct {
 	root      *binaryTreeNode
@@ -72,15 +89,7 @@ func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
 		return
 	}
 
-	if node.parent == nil {
-		fmt.Printf("%4v | %v | %v \n", "root", node.value, nil)
-	} else {
-		if node == node.parent.leftNode {
-			fmt.Printf("%4v | %v | %v \n", "L", node.value, node.parent.value)
-		} else {
-			fmt.Printf("%4v | %v | %v \n", "R", node.value, node.parent.value)
-		}
-	}
+	node.print()
 
 	binaryTree.print(node.leftNode)
 	binaryTree.print(node.rightNode)

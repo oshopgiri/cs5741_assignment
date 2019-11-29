@@ -19,7 +19,7 @@ func (stackOperations *StackOperations) Init(stack Stack) {
 func (stackOperations *StackOperations) Push(element interface{}) {
 	stackOperations.operations <- func(stack Stack) {
 		stack.Push(element)
-		fmt.Println("PUSH ", element)
+		fmt.Println("PUSH", element)
 		stack.Print()
 		fmt.Println()
 	}
@@ -33,7 +33,7 @@ func (stackOperations *StackOperations) Pop() bool {
 		responseChannel <- ok
 
 		if ok {
-			fmt.Println("POP ", element)
+			fmt.Println("POP", element)
 			stack.Print()
 			fmt.Println()
 		}

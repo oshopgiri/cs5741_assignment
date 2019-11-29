@@ -1,7 +1,7 @@
 package lab
 
 import (
-	"log"
+	"fmt"
 	"runtime"
 	"sync"
 	"time"
