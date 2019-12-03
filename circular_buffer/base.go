@@ -1,10 +1,17 @@
 package circular_buffer
 
-import "sync"
-
 type CircularBuffer interface {
 	Init(int)
-	Write(interface{}, *sync.WaitGroup) bool
-	Read(*sync.WaitGroup) (interface{}, bool)
+	Write(interface{}) bool
+	Read() (interface{}, bool)
 	Print()
 }
+
+type ICircularBufferOperations interface {
+	Init(CircularBuffer, int)
+	Write(interface{}) bool
+	Read() (interface{}, bool)
+	Close()
+}
+
+type CircularBufferOperation func(CircularBuffer)

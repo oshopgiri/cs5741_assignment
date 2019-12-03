@@ -10,7 +10,7 @@ type Stack interface {
 type IStackOperations interface {
 	Init(Stack)
 	Push(interface{})
-	Pop() bool
+	Pop() (interface{}, bool)
 	Close()
 }
 

@@ -2,7 +2,6 @@ package circular_buffer
 
 import (
 	"fmt"
-	"sync"
 )
 
 type binaryTreeNode struct {
@@ -44,7 +43,6 @@ type BinaryTree struct {
 	readPointer  int
 	writePointer int
 	size         int
-	sync.RWMutex
 }
 
 func (binaryTree *BinaryTree) Init(size int) {
@@ -69,14 +67,7 @@ func (binaryTree *BinaryTree) Init(size int) {
 	binaryTree.size = size
 }
 
-func (binaryTree *BinaryTree) Write(element interface{}, waitGroup *sync.WaitGroup) bool {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		binaryTree.Lock()
-		defer binaryTree.Unlock()
-	}
-
+func (binaryTree *BinaryTree) Write(element interface{}) bool {
 	writeNode := binaryTree.findNode(binaryTree.writePointer)
 	if writeNode.value == nil {
 		writeNode.value = element
@@ -87,61 +78,31 @@ func (binaryTree *BinaryTree) Write(element interface{}, waitGroup *sync.WaitGro
 		fmt.Println()
 
 		return true
-	} else {
-		if waitGroup != nil {
-			waitGroup.Add(1)
-			go binaryTree.Write(element, waitGroup)
-		}
-
-		return false
 	}
 
+	return false
 }
 
-func (binaryTree *BinaryTree) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		binaryTree.Lock()
-		defer binaryTree.Unlock()
-	}
-
+func (binaryTree *BinaryTree) Read() (interface{}, bool) {
 	readNode := binaryTree.findNode(binaryTree.readPointer)
-	if readNode.value != nil {
-		element := readNode.value
-		readNode.value = nil
-		binaryTree.readPointer = (binaryTree.readPointer + 1) % binaryTree.size
 
-		fmt.Println("READ", element)
-		binaryTree.Print()
-		fmt.Println()
-
-		return element, true
-	} else {
-		if waitGroup != nil {
-			waitGroup.Add(1)
-			go binaryTree.Read(waitGroup)
-		}
-
+	if readNode.value == nil {
 		return nil, false
 	}
+
+	element := readNode.value
+	readNode.value = nil
+	binaryTree.readPointer = (binaryTree.readPointer + 1) % binaryTree.size
+
+	fmt.Println("READ", element)
+	binaryTree.Print()
+	fmt.Println()
+
+	return element, true
 }
 
 func (binaryTree *BinaryTree) Print() {
 	binaryTree.print(binaryTree.root)
-}
-
-func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
-	if node == nil {
-		return
-	}
-
-	readPointerNode := binaryTree.findNode(binaryTree.readPointer)
-	writePointerNode := binaryTree.findNode(binaryTree.writePointer)
-	node.print(readPointerNode, writePointerNode)
-
-	binaryTree.print(node.leftNode)
-	binaryTree.print(node.rightNode)
 }
 
 func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
@@ -160,9 +121,9 @@ func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
 		}
 
 		return currentNode
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
 func (binaryTree *BinaryTree) findPathToRoot(nodeIndex int) []int {
@@ -179,4 +140,17 @@ func (binaryTree *BinaryTree) findPathToRoot(nodeIndex int) []int {
 	}
 
 	return pathToRoot
+}
+
+func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
+	if node == nil {
+		return
+	}
+
+	readPointerNode := binaryTree.findNode(binaryTree.readPointer)
+	writePointerNode := binaryTree.findNode(binaryTree.writePointer)
+	node.print(readPointerNode, writePointerNode)
+
+	binaryTree.print(node.leftNode)
+	binaryTree.print(node.rightNode)
 }

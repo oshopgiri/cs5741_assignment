@@ -1,13 +1,16 @@
 package stack
 
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+)
 
 type StackOperations struct {
 	operations chan StackOperation
 }
 
 func (stackOperations *StackOperations) Init(stack Stack) {
-	stackOperations.operations = make(chan StackOperation)
+	stackOperations.operations = make(chan StackOperation, runtime.GOMAXPROCS(0))
 
 	go func() {
 		for operation := range stackOperations.operations {
@@ -25,12 +28,14 @@ func (stackOperations *StackOperations) Push(element interface{}) {
 	}
 }
 
-func (stackOperations *StackOperations) Pop() bool {
-	responseChannel := make(chan bool)
+func (stackOperations *StackOperations) Pop() (interface{}, bool) {
+	responseChannel := make(chan interface{})
+	statusChannel := make(chan bool)
 
 	stackOperations.operations <- func(stack Stack) {
 		element, ok := stack.Pop()
-		responseChannel <- ok
+		responseChannel <- element
+		statusChannel <- ok
 
 		if ok {
 			fmt.Println("POP", element)
@@ -39,7 +44,7 @@ func (stackOperations *StackOperations) Pop() bool {
 		}
 	}
 
-	return <-responseChannel
+	return <-responseChannel, <-statusChannel
 }
 
 func (stackOperations *StackOperations) Close() {

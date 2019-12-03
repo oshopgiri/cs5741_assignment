@@ -16,7 +16,7 @@ func produceStackAsync(stackOperations stack.IStackOperations, start, end int, w
 
 func consumeStackAsync(stackOperations stack.IStackOperations, start, end int, waitGroup *sync.WaitGroup) {
 	for i := start; i <= end; i++ {
-		if ok := stackOperations.Pop(); !ok {
+		if _, ok := stackOperations.Pop(); !ok {
 			i--
 		}
 	}
@@ -33,11 +33,16 @@ func AsynchronousStack(count int, myStack stack.Stack) {
 	inputsPerOperation := count / threadsPerOperation
 
 	for i := 0; i < threadsPerOperation; i++ {
-		waitGroup.Add(1)
-		go consumeStackAsync(stackOperations, i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1, waitGroup)
+		start, end := i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1
+		if end > count {
+			end = count
+		}
 
 		waitGroup.Add(1)
-		go produceStackAsync(stackOperations, i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1, waitGroup)
+		go consumeStackAsync(stackOperations, start, end, waitGroup)
+
+		waitGroup.Add(1)
+		go produceStackAsync(stackOperations, start, end, waitGroup)
 
 	}
 

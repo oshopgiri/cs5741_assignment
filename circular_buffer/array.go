@@ -2,7 +2,6 @@ package circular_buffer
 
 import (
 	"fmt"
-	"sync"
 )
 
 type Array struct {
@@ -10,69 +9,37 @@ type Array struct {
 	size         int
 	readPointer  int
 	writePointer int
-	sync.RWMutex
 }
 
 func (array *Array) Init(size int) {
-	array.size = size
 	array.elements = make([]interface{}, size)
+	
+	array.size = size
 	array.readPointer = 0
 	array.writePointer = 0
 }
 
-func (array *Array) Write(element interface{}, waitGroup *sync.WaitGroup) bool {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		array.Lock()
-		defer array.Unlock()
-	}
-
+func (array *Array) Write(element interface{}) bool {
 	if array.elements[array.writePointer] == nil {
 		array.elements[array.writePointer] = element
 		array.writePointer = array.nextIndex(array.writePointer)
 
-		fmt.Println("WRITE", element)
-		array.Print()
-		fmt.Println()
-
 		return true
-	} else {
-		if waitGroup != nil {
-			waitGroup.Add(1)
-			go array.Write(element, waitGroup)
-		}
-
-		return false
 	}
+
+	return false
 }
 
-func (array *Array) Read(waitGroup *sync.WaitGroup) (interface{}, bool) {
-	if waitGroup != nil {
-		defer waitGroup.Done()
-
-		array.Lock()
-		defer array.Unlock()
-	}
-
+func (array *Array) Read() (interface{}, bool) {
 	if array.elements[array.readPointer] != nil {
 		element := array.elements[array.readPointer]
 		array.elements[array.readPointer] = nil
 		array.readPointer = array.nextIndex(array.readPointer)
 
-		fmt.Println("READ", element)
-		array.Print()
-		fmt.Println()
-
 		return element, true
-	} else {
-		if waitGroup != nil {
-			waitGroup.Add(1)
-			go array.Read(waitGroup)
-		}
-
-		return nil, false
 	}
+
+	return nil, false
 }
 
 func (array *Array) Print() {

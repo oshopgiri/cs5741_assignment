@@ -2,23 +2,23 @@ package main
 
 import (
 	"github.com/oshopgiri/assignments/circular_buffer"
-	"sync"
 )
 
-func produceCircularBuffer(myBuffer circular_buffer.CircularBuffer, start int, end int, waitGroup *sync.WaitGroup) {
+func produceCircularBuffer(circularBufferOperations circular_buffer.ICircularBufferOperations, start int, end int) {
 	for i := start; i <= end; i++ {
-		myBuffer.Write(i, nil)
+		circularBufferOperations.Write(i)
 	}
 }
 
-func consumeCircularBuffer(myBuffer circular_buffer.CircularBuffer, start int, end int, waitGroup *sync.WaitGroup) {
+func consumeCircularBuffer(circularBufferOperations circular_buffer.ICircularBufferOperations, start int, end int) {
 	for i := start; i <= end; i++ {
-		myBuffer.Read(nil)
+		circularBufferOperations.Read()
 	}
 }
 
-func SynchronousCircularBuffer(size int, count int, myBuffer circular_buffer.CircularBuffer) {
-	myBuffer.Init(size)
+func SynchronousCircularBuffer(size int, count int, myCircularBuffer circular_buffer.CircularBuffer) {
+	var circularBufferOperations circular_buffer.ICircularBufferOperations = &circular_buffer.CircularBufferOperations{}
+	circularBufferOperations.Init(myCircularBuffer, size)
 
 	loopCount := count / size
 	if count%size > 0 {
@@ -32,7 +32,7 @@ func SynchronousCircularBuffer(size int, count int, myBuffer circular_buffer.Cir
 			end = count
 		}
 
-		produceCircularBuffer(myBuffer, start, end, nil)
-		consumeCircularBuffer(myBuffer, start, end, nil)
+		produceCircularBuffer(circularBufferOperations, start, end)
+		consumeCircularBuffer(circularBufferOperations, start, end)
 	}
 }
