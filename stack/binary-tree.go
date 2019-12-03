@@ -2,7 +2,6 @@ package stack
 
 import (
 	"fmt"
-	"sync"
 )
 
 type binaryTreeNode struct {
@@ -34,7 +33,6 @@ func (node *binaryTreeNode) print() {
 type BinaryTree struct {
 	root      *binaryTreeNode
 	nextIndex int
-	sync.RWMutex
 }
 
 func (binaryTree *BinaryTree) Init() {}

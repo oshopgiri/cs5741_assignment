@@ -15,30 +15,31 @@ func (node *linkedListNode) print() {
 }
 
 type LinkedList struct {
-	firstNode    *linkedListNode
-	lastNode     *linkedListNode
 	readPointer  *linkedListNode
 	writePointer *linkedListNode
 }
 
 func (linkedList *LinkedList) Init(size int) {
-	for i := 0; i < size; i++ {
-		node := &linkedListNode{nil, linkedList.lastNode, nil}
+	firstNode := &linkedListNode{}
+	lastNode := &linkedListNode{}
 
-		if linkedList.firstNode == nil {
-			linkedList.firstNode = node
-			linkedList.lastNode = node
+	for i := 0; i < size; i++ {
+		node := &linkedListNode{nil, lastNode, nil}
+
+		if i == 0 {
+			firstNode = node
+			lastNode = node
 		} else {
-			linkedList.lastNode.next = node
-			linkedList.lastNode = node
+			lastNode.next = node
+			lastNode = node
 		}
 	}
 
-	linkedList.lastNode.next = linkedList.firstNode
-	linkedList.firstNode.previous = linkedList.lastNode
+	lastNode.next = firstNode
+	firstNode.previous = lastNode
 
-	linkedList.readPointer = linkedList.firstNode
-	linkedList.writePointer = linkedList.firstNode
+	linkedList.readPointer = firstNode
+	linkedList.writePointer = firstNode
 }
 
 func (linkedList *LinkedList) Write(element interface{}) bool {
@@ -65,7 +66,8 @@ func (linkedList *LinkedList) Read() (interface{}, bool) {
 }
 
 func (linkedList *LinkedList) Print() {
-	currentNode := linkedList.firstNode
+	currentNode := linkedList.readPointer
+	startNode := currentNode
 
 	for {
 		currentNode.print()
@@ -77,7 +79,7 @@ func (linkedList *LinkedList) Print() {
 		}
 		fmt.Println()
 
-		if currentNode == linkedList.lastNode {
+		if currentNode == startNode {
 			break
 		} else {
 			fmt.Printf("%5v\n", "↓")

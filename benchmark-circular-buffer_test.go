@@ -15,36 +15,36 @@ func BenchmarkCircularBufferMain(b *testing.B) {
 
 func BenchmarkAsynchronousCircularBufferArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousCircularBuffer(100, 10000, &circular_buffer.Array{})
+		AsynchronousCircularBuffer(100, 100000, &circular_buffer.Array{})
 	}
 }
 
 func BenchmarkSynchronousCircularBufferArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousCircularBuffer(100, 10000, &circular_buffer.Array{})
+		SynchronousCircularBuffer(100, 100000, &circular_buffer.Array{})
 	}
 }
 
 func BenchmarkAsynchronousCircularBufferLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousCircularBuffer(100, 10000, &circular_buffer.LinkedList{})
+		AsynchronousCircularBuffer(100, 100000, &circular_buffer.LinkedList{})
 	}
 }
 
 func BenchmarkSynchronousCircularBufferLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousCircularBuffer(100, 10000, &circular_buffer.LinkedList{})
+		SynchronousCircularBuffer(100, 100000, &circular_buffer.LinkedList{})
 	}
 }
 
 func BenchmarkAsynchronousCircularBufferBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousCircularBuffer(100, 10000, &circular_buffer.BinaryTree{})
+		AsynchronousCircularBuffer(100, 100000, &circular_buffer.BinaryTree{})
 	}
 }
 
 func BenchmarkSynchronousCircularBufferBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SynchronousCircularBuffer(100, 10000, &circular_buffer.BinaryTree{})
+		SynchronousCircularBuffer(100, 100000, &circular_buffer.BinaryTree{})
 	}
 }

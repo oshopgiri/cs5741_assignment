@@ -7,7 +7,7 @@ import (
 )
 
 func produceCircularBufferAsync(circularBufferOperations circular_buffer.ICircularBufferOperations, start, end int, waitGroup *sync.WaitGroup) {
-	for i := start; i <= end; i++ {
+	for i := start; i < end; i++ {
 		if ok := circularBufferOperations.Write(i); !ok {
 			i--
 		}
@@ -17,7 +17,7 @@ func produceCircularBufferAsync(circularBufferOperations circular_buffer.ICircul
 }
 
 func consumeCircularBufferAsync(circularBufferOperations circular_buffer.ICircularBufferOperations, start, end int, waitGroup *sync.WaitGroup) {
-	for i := start; i <= end; i++ {
+	for i := start; i < end; i++ {
 		if _, ok := circularBufferOperations.Read(); !ok {
 			i--
 		}
@@ -33,9 +33,12 @@ func AsynchronousCircularBuffer(size int, count int, myCircularBuffer circular_b
 
 	threadsPerOperation := runtime.GOMAXPROCS(0) / 2
 	inputsPerOperation := count / threadsPerOperation
+	if count > inputsPerOperation*threadsPerOperation {
+		inputsPerOperation++
+	}
 
 	for i := 0; i < threadsPerOperation; i++ {
-		start, end := i*inputsPerOperation+1, i*inputsPerOperation+inputsPerOperation+1
+		start, end := i*inputsPerOperation, i*inputsPerOperation+inputsPerOperation
 		if end > count {
 			end = count
 		}
