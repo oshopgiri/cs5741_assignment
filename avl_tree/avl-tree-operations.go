@@ -36,12 +36,11 @@ func (avlTreeOperations *AVLTreeOperations) Insert(element int) {
 	<-printWaitChannel
 }
 
-func (avlTreeOperations *AVLTreeOperations) Delete(element int) (int, bool) {
-	responseChannel := make(chan int)
+func (avlTreeOperations *AVLTreeOperations) Delete(element int) bool {
 	statusChannel := make(chan bool)
 
 	avlTreeOperations.operations <- func(avlTree IAVLTree) {
-		element, ok := avlTree.Delete(element)
+		ok := avlTree.Delete(element)
 
 		if ok {
 			fmt.Println("DELETE", element)
@@ -49,11 +48,10 @@ func (avlTreeOperations *AVLTreeOperations) Delete(element int) (int, bool) {
 			fmt.Println()
 		}
 
-		responseChannel <- element
 		statusChannel <- ok
 	}
 
-	return <-responseChannel, <-statusChannel
+	return <-statusChannel
 }
 
 func (avlTreeOperations *AVLTreeOperations) Close() {

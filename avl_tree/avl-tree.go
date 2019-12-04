@@ -19,6 +19,22 @@ func initTreeNode(element int) *avlTreeNode {
 	return &avlTreeNode{element, nil, nil, nil, 0, 0}
 }
 
+func (node *avlTreeNode) inOrderPredecessor() *avlTreeNode {
+	if node.rightNode == nil {
+		return node
+	}
+
+	return node.rightNode.inOrderPredecessor()
+}
+
+func (node *avlTreeNode) inOrderSuccessor() *avlTreeNode {
+	if node.leftNode == nil {
+		return node
+	}
+
+	return node.leftNode.inOrderSuccessor()
+}
+
 func (node *avlTreeNode) isBalanced() bool {
 	leftHeight, rightHeight := 0, 0
 
@@ -83,16 +99,99 @@ func (avlTree *AVLTree) Insert(element int) {
 	}
 }
 
-func (avlTree *AVLTree) Delete(element int) (int, bool) {
+func (avlTree *AVLTree) Delete(element int) bool {
+	nodeToDelete := avlTree.findNode(element)
+	if nodeToDelete == nil {
+		return false
+	}
 
+	if nodeToDelete.leftNode == nil && nodeToDelete.rightNode == nil {
+		if nodeToDelete.parent != nil {
+			if nodeToDelete == nodeToDelete.parent.leftNode {
+				nodeToDelete.parent.leftNode = nil
+			}
+			if nodeToDelete == nodeToDelete.parent.rightNode {
+				nodeToDelete.parent.rightNode = nil
+			}
+			nodeToDelete.parent = nil
+		}
 
-	return 0, false
+		return true
+	} else if nodeToDelete.rightNode != nil {
+		inOrderSuccessor := nodeToDelete.rightNode.inOrderSuccessor()
+		nodeToDelete.value = inOrderSuccessor.value
+
+		if inOrderSuccessor.leftNode == nil && inOrderSuccessor.rightNode == nil {
+			if inOrderSuccessor == inOrderSuccessor.parent.leftNode {
+				inOrderSuccessor.parent.leftNode = nil
+			}
+			if inOrderSuccessor == inOrderSuccessor.parent.rightNode {
+				inOrderSuccessor.parent.rightNode = nil
+			}
+			inOrderSuccessor.parent = nil
+		} else if inOrderSuccessor.rightNode != nil {
+			if inOrderSuccessor == inOrderSuccessor.parent.leftNode {
+				inOrderSuccessor.parent.leftNode = inOrderSuccessor.rightNode
+			}
+			if inOrderSuccessor == inOrderSuccessor.parent.rightNode {
+				inOrderSuccessor.parent.rightNode = inOrderSuccessor.rightNode
+			}
+			inOrderSuccessor.rightNode.parent = inOrderSuccessor.parent
+			inOrderSuccessor.parent = nil
+		}
+
+		return true
+	} else if nodeToDelete.leftNode != nil {
+		inOrderPredecessor := nodeToDelete.leftNode.inOrderPredecessor()
+		nodeToDelete.value = inOrderPredecessor.value
+
+		if inOrderPredecessor.leftNode == nil && inOrderPredecessor.rightNode == nil {
+			if inOrderPredecessor == inOrderPredecessor.parent.leftNode {
+				inOrderPredecessor.parent.leftNode = nil
+			}
+			if inOrderPredecessor == inOrderPredecessor.parent.rightNode {
+				inOrderPredecessor.parent.rightNode = nil
+			}
+			inOrderPredecessor.parent = nil
+		} else if inOrderPredecessor.leftNode != nil {
+			if inOrderPredecessor == inOrderPredecessor.parent.leftNode {
+				inOrderPredecessor.parent.leftNode = inOrderPredecessor.leftNode
+			}
+			if inOrderPredecessor == inOrderPredecessor.parent.rightNode {
+				inOrderPredecessor.parent.rightNode = inOrderPredecessor.leftNode
+			}
+			inOrderPredecessor.leftNode.parent = inOrderPredecessor.parent
+			inOrderPredecessor.parent = nil
+		}
+
+		return true
+	}
+
+	return false
 }
 
 func (avlTree *AVLTree) Print() {
 	fmt.Println(strings.Repeat("-", 50))
 	avlTree.root.print(0)
 	fmt.Println(strings.Repeat("-", 50))
+}
+
+func (avlTree *AVLTree) findNode(element int) *avlTreeNode {
+	currentNode := avlTree.root
+
+	for {
+		if currentNode == nil {
+			break
+		} else if element == currentNode.value {
+			break
+		} else if element > currentNode.value {
+			currentNode = currentNode.rightNode
+		} else if element < currentNode.value {
+			currentNode = currentNode.leftNode
+		}
+	}
+
+	return currentNode
 }
 
 func (avlTree *AVLTree) insert(node *avlTreeNode, parentNode *avlTreeNode, element int) {

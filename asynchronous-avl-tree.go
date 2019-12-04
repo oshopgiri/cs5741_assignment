@@ -14,11 +14,11 @@ func produceAVLTreeAsync(avlTreeOperations avl_tree.IAVLTreeOperations, start, e
 }
 
 func consumeAVLTreeAsync(avlTreeOperations avl_tree.IAVLTreeOperations, start, end int, waitGroup *sync.WaitGroup) {
-	//for i := start; i < end; i++ {
-	//	if _, ok := avlTreeOperations.Delete(i); !ok {
-	//		i--
-	//	}
-	//}
+	for i := start; i < end; i++ {
+		if ok := avlTreeOperations.Delete(i); !ok {
+			i--
+		}
+	}
 
 	waitGroup.Done()
 }
