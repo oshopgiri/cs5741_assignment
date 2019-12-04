@@ -15,7 +15,7 @@ func BenchmarkStackMain(b *testing.B) {
 
 func BenchmarkAsynchronousStackArray(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStack(100000, &stack.Array{})
+		AsynchronousStack(100000, &stack.Array{}, 4, 4)
 	}
 }
 
@@ -27,7 +27,7 @@ func BenchmarkSynchronousStackArray(b *testing.B) {
 
 func BenchmarkAsynchronousStackLinkedList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStack(100000, &stack.LinkedList{})
+		AsynchronousStack(100000, &stack.LinkedList{}, 4, 4)
 	}
 }
 
@@ -39,7 +39,7 @@ func BenchmarkSynchronousStackLinkedList(b *testing.B) {
 
 func BenchmarkAsynchronousStackBinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		AsynchronousStack(100000, &stack.BinaryTree{})
+		AsynchronousStack(100000, &stack.BinaryTree{}, 4, 4)
 	}
 }
 

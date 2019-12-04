@@ -22,4 +22,6 @@ func SynchronousStack(count int, myStack stack.Stack) {
 
 	produceStackArray(stackOperations, count)
 	consumeStackArray(stackOperations, count)
+
+	stackOperations.Close()
 }

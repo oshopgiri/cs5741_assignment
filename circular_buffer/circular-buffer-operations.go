@@ -25,11 +25,14 @@ func (circularBufferOperations *CircularBufferOperations) Write(element interfac
 
 	circularBufferOperations.operations <- func(circularBuffer CircularBuffer) {
 		ok := circularBuffer.Write(element)
-		statusChannel <- ok
 
-		fmt.Println("WRITE", element)
-		circularBuffer.Print()
-		fmt.Println()
+		if ok {
+			fmt.Println("WRITE", element)
+			circularBuffer.Print()
+			fmt.Println()
+		}
+
+		statusChannel <- ok
 	}
 
 	return <-statusChannel
@@ -41,14 +44,15 @@ func (circularBufferOperations *CircularBufferOperations) Read() (interface{}, b
 
 	circularBufferOperations.operations <- func(circularBuffer CircularBuffer) {
 		element, ok := circularBuffer.Read()
-		responseChannel <- element
-		statusChannel <- ok
 
 		if ok {
 			fmt.Println("READ", element)
 			circularBuffer.Print()
 			fmt.Println()
 		}
+
+		responseChannel <- element
+		statusChannel <- ok
 	}
 
 	return <-responseChannel, <-statusChannel

@@ -2,6 +2,7 @@ package stack
 
 import (
 	"fmt"
+	"strings"
 )
 
 type binaryTreeNode struct {
@@ -11,23 +12,25 @@ type binaryTreeNode struct {
 	rightNode *binaryTreeNode
 }
 
-func (node *binaryTreeNode) print() {
-	direction := ""
-	var parentValue interface{}
+func (node *binaryTreeNode) print(level int) {
+	format := ""
 
-	if node.parent == nil {
-		direction = "root"
-		parentValue = nil
-	} else {
-		if node == node.parent.leftNode {
-			direction = "L"
-		} else if node == node.parent.rightNode {
-			direction = "R"
-		}
-		parentValue = node.parent.value
+	for i := 0; i < level; i++ {
+		format += strings.Repeat(" ", 10)
 	}
 
-	fmt.Printf("%4v | %5v | %5v \n", direction, node.value, parentValue)
+	format += "---[ "
+	level++
+
+	if node.rightNode != nil {
+		node.rightNode.print(level)
+	}
+
+	fmt.Printf(format+"%d\n", node.value)
+
+	if node.leftNode != nil {
+		node.leftNode.print(level)
+	}
 }
 
 type BinaryTree struct {
@@ -79,18 +82,9 @@ func (binaryTree *BinaryTree) Pop() (interface{}, bool) {
 }
 
 func (binaryTree *BinaryTree) Print() {
-	binaryTree.print(binaryTree.root)
-}
-
-func (binaryTree *BinaryTree) print(node *binaryTreeNode) {
-	if node == nil {
-		return
-	}
-
-	node.print()
-
-	binaryTree.print(node.leftNode)
-	binaryTree.print(node.rightNode)
+	fmt.Println(strings.Repeat("-", 50))
+	binaryTree.root.print(0)
+	fmt.Println(strings.Repeat("-", 50))
 }
 
 func (binaryTree *BinaryTree) findNode(nodeIndex int) *binaryTreeNode {
@@ -128,28 +122,4 @@ func (binaryTree *BinaryTree) findPathToRoot(nodeIndex int) []int {
 	}
 
 	return pathToRoot
-}
-
-func (binaryTree *BinaryTree) findLevels() int {
-	if binaryTree.root == nil {
-		return 0
-	}
-
-	currentIndex := binaryTree.nextIndex - 1
-	start := 0
-	end := 0
-	levels := 0
-
-	for {
-		levels++
-
-		if currentIndex >= start && currentIndex <= end {
-			break
-		}
-
-		start += start + 1
-		end += end + 2
-	}
-
-	return levels
 }

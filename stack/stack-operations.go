@@ -11,6 +11,7 @@ type StackOperations struct {
 
 func (stackOperations *StackOperations) Init(stack Stack) {
 	stackOperations.operations = make(chan StackOperation, runtime.GOMAXPROCS(0))
+	stack.Init()
 
 	go func() {
 		for operation := range stackOperations.operations {
@@ -20,12 +21,19 @@ func (stackOperations *StackOperations) Init(stack Stack) {
 }
 
 func (stackOperations *StackOperations) Push(element interface{}) {
+	printWaitChannel := make(chan bool)
+
 	stackOperations.operations <- func(stack Stack) {
 		stack.Push(element)
+
 		fmt.Println("PUSH", element)
 		stack.Print()
 		fmt.Println()
+
+		printWaitChannel <- true
 	}
+
+	<-printWaitChannel
 }
 
 func (stackOperations *StackOperations) Pop() (interface{}, bool) {
@@ -34,14 +42,15 @@ func (stackOperations *StackOperations) Pop() (interface{}, bool) {
 
 	stackOperations.operations <- func(stack Stack) {
 		element, ok := stack.Pop()
-		responseChannel <- element
-		statusChannel <- ok
 
 		if ok {
 			fmt.Println("POP", element)
 			stack.Print()
 			fmt.Println()
 		}
+
+		responseChannel <- element
+		statusChannel <- ok
 	}
 
 	return <-responseChannel, <-statusChannel

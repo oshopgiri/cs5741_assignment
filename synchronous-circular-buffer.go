@@ -35,4 +35,6 @@ func SynchronousCircularBuffer(size int, count int, myCircularBuffer circular_bu
 		produceCircularBuffer(circularBufferOperations, start, end)
 		consumeCircularBuffer(circularBufferOperations, start, end)
 	}
+
+	circularBufferOperations.Close()
 }

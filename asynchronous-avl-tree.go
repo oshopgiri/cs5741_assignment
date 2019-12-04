@@ -1,32 +1,32 @@
 package main
 
 import (
-	"github.com/oshopgiri/assignments/stack"
+	"github.com/oshopgiri/assignments/avl_tree"
 	"sync"
 )
 
-func produceStackAsync(stackOperations stack.IStackOperations, start, end int, waitGroup *sync.WaitGroup) {
+func produceAVLTreeAsync(avlTreeOperations avl_tree.IAVLTreeOperations, start, end int, waitGroup *sync.WaitGroup) {
 	for i := start; i < end; i++ {
-		stackOperations.Push(i)
+		avlTreeOperations.Insert(i)
 	}
 
 	waitGroup.Done()
 }
 
-func consumeStackAsync(stackOperations stack.IStackOperations, start, end int, waitGroup *sync.WaitGroup) {
-	for i := start; i < end; i++ {
-		if _, ok := stackOperations.Pop(); !ok {
-			i--
-		}
-	}
+func consumeAVLTreeAsync(avlTreeOperations avl_tree.IAVLTreeOperations, start, end int, waitGroup *sync.WaitGroup) {
+	//for i := start; i < end; i++ {
+	//	if _, ok := avlTreeOperations.Delete(i); !ok {
+	//		i--
+	//	}
+	//}
 
 	waitGroup.Done()
 }
 
-func AsynchronousStack(count int, myStack stack.Stack, numberOfProducers, numberOfConsumers int) {
+func AsynchronousAVLTree(count int, myAVLTree avl_tree.IAVLTree, numberOfProducers, numberOfConsumers int) {
 	waitGroup := new(sync.WaitGroup)
-	var stackOperations stack.IStackOperations = &stack.StackOperations{}
-	stackOperations.Init(myStack)
+	var avlTreeOperations avl_tree.IAVLTreeOperations = &avl_tree.AVLTreeOperations{}
+	avlTreeOperations.Init(myAVLTree)
 
 	consumerInputsPerOperation := count / numberOfConsumers
 	if count > consumerInputsPerOperation*numberOfConsumers {
@@ -40,7 +40,7 @@ func AsynchronousStack(count int, myStack stack.Stack, numberOfProducers, number
 		}
 
 		waitGroup.Add(1)
-		go consumeStackAsync(stackOperations, start, end, waitGroup)
+		go consumeAVLTreeAsync(avlTreeOperations, start, end, waitGroup)
 	}
 
 	producerInputsPerOperation := count / numberOfProducers
@@ -55,9 +55,9 @@ func AsynchronousStack(count int, myStack stack.Stack, numberOfProducers, number
 		}
 
 		waitGroup.Add(1)
-		go produceStackAsync(stackOperations, start, end, waitGroup)
+		go produceAVLTreeAsync(avlTreeOperations, start, end, waitGroup)
 	}
 
 	waitGroup.Wait()
-	stackOperations.Close()
+	avlTreeOperations.Close()
 }
